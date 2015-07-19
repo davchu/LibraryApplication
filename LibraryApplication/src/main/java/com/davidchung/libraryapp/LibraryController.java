@@ -8,7 +8,6 @@ import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +29,16 @@ import com.davidchung.libraryapp.service.LibraryService;
 public class LibraryController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(LibraryController.class);
+
+	LibraryService libraryService;
+	
+	public void setLibraryService(LibraryService libraryService) {
+		this.libraryService = libraryService;
+	}
+
+	public LibraryService getLibraryService() {
+		return libraryService;
+	}
 	
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -41,12 +50,9 @@ public class LibraryController {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 		String formattedDate = dateFormat.format(date);
 		model.addAttribute("serverTime", formattedDate );
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
 		List<LibraryMember> members = LibraryDataSetup.createLibraryMembers();
 		List<Book> books = LibraryDataSetup.createBooks();
-		
-		LibraryService libraryService = context.getBean(LibraryService.class);
 
 		if(libraryService.getAllMembers().isEmpty()) {
 			for(LibraryMember m : members) {
@@ -68,8 +74,6 @@ public class LibraryController {
 		libraryService.getAllBooks();
 		libraryService.getAllBookLoans();
 
-		// close resources
-		context.close();
 		return "home";
 	}
 	
@@ -79,11 +83,8 @@ public class LibraryController {
 	@RequestMapping(value = "/getAllLibraryMembers", method = RequestMethod.GET)
 	public @ResponseBody List<LibraryMember> getAllLibraryMembers() {
 		logger.info("In getAllLibraryMembers");
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 		List<LibraryMember> members = null;
-		LibraryService libraryService = context.getBean(LibraryService.class);
 		members = libraryService.getAllMembers();
-		context.close();
 		return members;		
 	}
 	
@@ -93,18 +94,12 @@ public class LibraryController {
 	@RequestMapping(value= "/getLibraryMemberDetails/{id}", method = RequestMethod.GET)
 	public @ResponseBody List<BookLoan> getLibraryMemberDetails(@PathVariable("id") int id) {
 		logger.info("In getLibraryMemberDetails");
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 		List<BookLoan> bl = new ArrayList<BookLoan>();
-		LibraryService libraryService = context.getBean(LibraryService.class);
 		bl = libraryService.getLoanByMemberId(id);
 		logger.info("Book loan: " + bl);
-		context.close();
 		return bl;
 	}
 	
 	public static void main(String args[]) {
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
-		// close resources
-		context.close();
 	}
 }
