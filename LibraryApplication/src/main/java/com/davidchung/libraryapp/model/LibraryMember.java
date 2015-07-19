@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  */
 @Entity
-@Table(name="library_member")
+@Table(name="LIBRARY_MEMBER")
 public class LibraryMember {
 	
 	@Id
