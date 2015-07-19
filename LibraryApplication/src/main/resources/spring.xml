@@ -2,13 +2,14 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
     xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
  
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="org.h2.Driver" />
-        <property name="url" value="jdbc:h2:~/test" />
+        <property name="url" value="jdbc:h2:~/test;INIT=CREATE SCHEMA IF NOT EXISTS test" />
         <property name="username" value="" />
         <property name="password" value="" />
     </bean>
@@ -18,17 +19,17 @@
         <property name="dataSource" ref="dataSource" />
         <property name="annotatedClasses">
             <list>
+                <value>com.davidchung.libraryapp.model.BookLoan</value>
                 <value>com.davidchung.libraryapp.model.LibraryMember</value>
                 <value>com.davidchung.libraryapp.model.Book</value>
-                <value>com.davidchung.libraryapp.model.BookLoan</value>
             </list>
         </property>
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
                 <prop key="hibernate.current_session_context_class">thread</prop>
-                <prop key="hibernate.show_sql">false</prop>
-                <prop key="hibernate.hbm2ddl.auto">validate</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
             </props>
         </property>
     </bean>
@@ -36,4 +37,9 @@
     <bean id="libraryService" class="com.davidchung.libraryapp.service.LibrarySession">
         <property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
     </bean>
+    
+    <bean id="libraryController" class="com.davidchung.libraryapp.LibraryController">
+    	<property name="libraryService" ref="libraryService" />
+    </bean>
+    
 </beans>
